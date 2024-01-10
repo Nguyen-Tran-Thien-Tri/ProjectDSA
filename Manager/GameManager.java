@@ -12,21 +12,28 @@ import GameScreen.*;
 import javafx.event.ActionEvent;
 
 public class GameManager {
-    private GameScreen introScreen, pauseScreen, endGameScreen, resultScreen, playScreen, menuScreen, currenScreen;
+    private GameScreen introScreen, pauseScreen, endGameScreen, resultScreen, playScreen, menuScreen, currenScreen,highScoreScreen;
 
     private GameThread gameThread;
     public GameWindow gameWindow;
 
     public GameManager(GameWindow gameWindow) {
+        ScoreManager.setHighScore("Media/HighScore.txt");
         this.gameWindow = gameWindow;
         createIntro();
         createMenu();
+        createHighScore();
         currenScreen = introScreen;
+        
     }
 
     public void updateSizeScreen() {
         introScreen.updateSize();
         menuScreen.updateSize();
+        highScoreScreen.updateSize();
+
+        if(resultScreen != null) 
+            resultScreen.updateSize();
         if (playScreen != null)
             playScreen.updateSize();
     }
@@ -35,13 +42,11 @@ public class GameManager {
     public void addScreen(GameWindow gameWindow) {
         gameWindow.add(introScreen);
         gameWindow.add(menuScreen);
+        gameWindow.add(highScoreScreen);
     }
 
-    public static void addScreen(GameScreen screen, GameWindow gameWindow) {
-        gameWindow.add(screen);
-    }
+// =============intro screen =============================================
 
-    // =============intro screen =============================================
     public void createIntro() {
         GameButton start = new GameButton() {
 
@@ -70,8 +75,7 @@ public class GameManager {
     }
     // end intro screen
 
-    // ======== Menu Screen
-    // ==========================================================
+// ======== Menu Screen==========================================================
 
     public void createMenu() {
         // ---------set EASY button--------
@@ -113,7 +117,7 @@ public class GameManager {
         GameButton highScore = new GameButton() {
             @Override
             public void clickOn() {
-
+                displayHighscore();
                 System.out.println("High score clicked");
             }
         };
@@ -134,7 +138,7 @@ public class GameManager {
     }
     // End menuScreen
 
-    // ===== PlayScreen ============================================================
+// ===== PlayScreen ============================================================
 
     // ----------create new play
     // ---------------------------------------------------------------
@@ -166,17 +170,19 @@ public class GameManager {
         MapManager.showBomb();
         currenScreen.repaint();
         try {
-            Thread.currentThread().sleep(2000);
+            Thread.sleep(2000);
         } catch (Exception e) {
 
             System.out.println(e);
         }
         createResult(MapManager.getState(), MapManager.getMapScore());
         gameWindow.remove(playScreen);
+        playScreen = null;
     }
 
     // End play screen
-    // ==== Result Screen ========================================
+
+// ==== Result Screen ========================================
     public void createResult(GameState state, int score) {
 
         GameButton okButton = new GameButton() {
@@ -184,6 +190,7 @@ public class GameManager {
             public void clickOn() {
                 displayMenu();
                 gameWindow.remove(resultScreen);
+                resultScreen = null;
                 System.out.println("OK clicked");
             }
         };
@@ -191,14 +198,29 @@ public class GameManager {
         okButton.setForeground(Color.BLACK);
 
         this.resultScreen = new ResultScreen(okButton, score, MapManager.getPlayingTime(), state);
+        ScoreManager.updateScore(score, MapManager.getPlayingTime());
 
         gameWindow.add(resultScreen);
         resultScreen.updateSize();
         displayResult();
     }
+    
+    //End of Result Screen
 
-    // --------get/set
-    // method---------------------------------------------------------------------------------
+//================================================================
+    public void createHighScore(){
+        GameButton back = new GameButton() {
+            @Override
+            public void clickOn() {
+                displayMenu();
+                System.out.println("back clicked");
+            }
+        };
+        back.setText("BACK");
+        back.setForeground(Color.black);
+        this.highScoreScreen = new HighScoreScreen(back);
+    }
+    // --------get/set method---------------------------------------------------------------------------------
     public GameScreen getIntroScreen() {
         return introScreen;
     }
@@ -222,11 +244,9 @@ public class GameManager {
     public GameScreen getMenuScreen() {
         return menuScreen;
     }
-    // --------End of get/set
-    // method---------------------------------------------------------------------
+    // --------End of get/set method---------------------------------------------------------------------
 
-    // -------------display
-    // method---------------------------------------------------------------
+    // -------------displaymethod---------------------------------------------------------------
     public void displayIntro() {
         displayScreen(introScreen);
     }
@@ -241,6 +261,10 @@ public class GameManager {
 
     public void displayResult() {
         displayScreen(resultScreen);
+    }
+
+    public void displayHighscore(){
+        displayScreen(highScoreScreen);
     }
 
     public void displayScreen(GameScreen screen) {
