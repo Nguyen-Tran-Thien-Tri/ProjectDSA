@@ -1,11 +1,15 @@
 package Manager;
 
 import java.awt.Color;
-
+import java.io.File;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import GameEngine.GameState;
 import GameEngine.Level;
 import GameEngine.Map;
 import GameScreen.*;
+import javafx.event.ActionEvent;
 
 public class GameManager {
     private GameScreen introScreen, pauseScreen, endGameScreen, resultScreen, playScreen, menuScreen, currenScreen;
@@ -123,6 +127,7 @@ public class GameManager {
                 System.out.println("back clicked");
             }
         };
+        
         back.setText("BACK");
         back.setForeground(Color.black);
         menuScreen = new MenuScreen(easy, medium, hard, highScore, back);

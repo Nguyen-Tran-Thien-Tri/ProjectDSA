@@ -5,18 +5,29 @@ import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-
 import javax.swing.JLabel;
 
+import GameEngine.Sound;
 public abstract class GameButton extends JLabel implements MouseListener {
+    
+    
+        
+    
     public GameButton(){
         this.addMouseListener(this);
     }
+  
+    
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            
             clickOn();
+            
+
         }
+
+        
 
         @Override
         public void mousePressed(MouseEvent e) {
